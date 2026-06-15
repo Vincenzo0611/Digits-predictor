@@ -33,6 +33,8 @@ export class PredictComponent {
 
   feedbackMessage = '';
 
+  showHelpModal = false;
+
   apiUrl = environment.apiUrl;
 
   feedbackChoice: 'correct' | 'wrong' | null = null;
@@ -167,5 +169,14 @@ export class PredictComponent {
     this.sendWrongFeedback(
       this.selectedDigit
     );
+  }
+  openHelpModal() {
+
+    this.showHelpModal = true;
+  }
+
+  closeHelpModal() {
+
+    this.showHelpModal = false;
   }
 }

@@ -169,7 +169,7 @@ input:focus {
 .prediction-title {
   font-size: 22px;
 
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .prediction-meta {
@@ -418,4 +418,79 @@ button:disabled {
   font-size: 15px;
 
   text-align: center;
+}
+
+.predict-header {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+}
+
+.help-button {
+
+  background: #1c1c1c;
+
+  border: 1px solid #343434;
+
+  color: #d0d0d0;
+}
+
+.help-button:hover {
+
+  background: #2a2a2a;
+}
+
+.modal-overlay {
+
+  position: fixed;
+
+  inset: 0;
+
+  background: rgba(0, 0, 0, 0.75);
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  z-index: 1000;
+}
+
+.modal-content {
+
+  width: 100%;
+
+  max-width: 500px;
+
+  background: #171717;
+
+  border: 1px solid #2d2d2d;
+
+  border-radius: 18px;
+
+  padding: 32px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 24px;
+}
+
+.tips-list {
+
+  padding-left: 20px;
+
+  color: #cfcfcf;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 12px;
 }

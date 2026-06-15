@@ -1,11 +1,21 @@
 <div class="predict-container">
 
-  <div class="card">
+  <div class="card">    
+    <div class="predict-header">
 
-    <h1 class="prediction-title">
-      Upload digit image
-    </h1>
+      <h1 class="prediction-title">
+        Upload digit image
+      </h1>
 
+      <button
+        class="help-button"
+        (click)="openHelpModal()"
+      >
+        How to take photos?
+      </button>
+
+    </div>
+    
     <div class="upload-box">
 
       <input
@@ -144,3 +154,59 @@
     </div>
   } 
 </div>
+
+@if(showHelpModal) {
+
+  <div
+    class="modal-overlay"
+    (click)="closeHelpModal()"
+  >
+
+    <div
+      class="modal-content"
+      (click)="$event.stopPropagation()"
+    >
+
+      <h2>
+        How to take good photos
+      </h2>
+
+      <ul class="tips-list">
+
+        <li>
+          Use only one digit per image
+        </li>
+
+        <li>
+          Keep background clean and uniform
+        </li>
+
+        <li>
+          Ensure strong contrast
+          between digit and background
+        </li>
+
+        <li>
+          Avoid shadows and blur
+        </li>
+
+        <li>
+          Center the digit in the image
+        </li>
+
+        <li>
+          Avoid extra objects or text
+        </li>
+
+      </ul>
+
+      <button
+        (click)="closeHelpModal()"
+      >
+        Close
+      </button>
+
+    </div>
+
+  </div>
+} 
