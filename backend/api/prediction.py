@@ -60,6 +60,7 @@ async def predict(
     db.refresh(prediction_row)
 
     return {
+        "prediction_id": prediction_row.id,
         "filename": filename,
         "prediction": result["digit"],
         "confidence": result["confidence"],

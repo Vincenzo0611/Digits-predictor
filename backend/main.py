@@ -12,11 +12,24 @@ from backend.api.auth import router as auth_router
 from backend.api.users import router as users_router
 from backend.api.prediction import router as prediction_router
 from backend.api.feedback import router as feedback_router
+from backend.api.dashboard import router as dashboard_router
+
+from fastapi.middleware.cors import CORSMiddleware
 
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Digit Recognition API"
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:4200"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.mount(
@@ -30,3 +43,4 @@ app.include_router(auth_router)
 app.include_router(users_router)
 app.include_router(prediction_router)
 app.include_router(feedback_router)
+app.include_router(dashboard_router)

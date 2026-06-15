@@ -1,0 +1,60 @@
+<div class="auth-container">
+
+  <div class="card">
+
+    <h1 class="auth-title">
+      Register
+    </h1>
+
+    <div class="form-group">
+
+      <input
+        type="email"
+        placeholder="Email"
+        [(ngModel)]="email"
+      />
+
+    </div>
+
+    <div class="form-group">
+
+      <input
+        type="password"
+        placeholder="Password"
+         [(ngModel)]="password"
+      />
+
+    </div>
+
+    @if(errorMessage) {
+
+        <p class="error-message">
+
+            {{ errorMessage }}
+
+        </p>
+        }
+
+        @if(successMessage) {
+
+        <p class="success-message">
+
+            {{ successMessage }}
+
+        </p>
+    }
+
+    <button (click)="register()">
+      Register
+    </button>
+
+    <br><br>
+
+    <a routerLink="/login">
+      Already have account?
+      Login
+    </a>
+
+  </div>
+
+</div>

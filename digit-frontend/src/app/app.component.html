@@ -1,0 +1,45 @@
+<nav class="navbar">
+
+  <div>
+    <strong>
+      DigitPredictor
+    </strong>
+  </div>
+
+  <div class="nav-links">
+
+    @if(isLoggedIn()) {
+
+      <a routerLink="/predict">
+        Predict
+      </a>
+
+      <a routerLink="/dashboard">
+        Dashboard
+      </a>
+
+      <button (click)="logout()" class="logout-button">
+        Logout
+      </button>
+
+    } @else {
+
+      <a routerLink="/login">
+        Login
+      </a>
+
+      <a routerLink="/register">
+        Register
+      </a>
+
+    }
+
+  </div>
+
+</nav>
+
+<div class="page-container">
+
+<router-outlet></router-outlet>
+
+</div>

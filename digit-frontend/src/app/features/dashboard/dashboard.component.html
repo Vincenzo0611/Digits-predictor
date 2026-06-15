@@ -1,0 +1,61 @@
+<h1 class="prediction-title">
+  Dashboard
+</h1>
+
+<div class="dashboard-grid">
+
+  @for(
+    prediction of predictions;
+    track prediction.id
+  ) {
+
+    <div class="card">
+      <h2>
+        Prediction:
+        {{ prediction.prediction }}
+      </h2>
+
+      <p class="prediction-meta">
+        Confidence:
+        {{ prediction.confidence }}
+      </p>
+
+      <p class="prediction-meta">
+        User:
+        {{ prediction.user_email }}
+      </p>
+
+      <p class="prediction-meta">
+        Correct:
+        {{ prediction.is_correct }}
+      </p>
+
+      @if(prediction.correct_digit) {
+
+        <p class="prediction-meta">
+
+          Correct digit:
+          {{ prediction.correct_digit }}
+
+        </p>
+      }
+
+      <img
+        [src]="
+          apiUrl +
+          '/processed/' +
+          prediction.processed_image_path
+        "
+        class="prediction-image"
+      />
+      
+      <button
+        class="delete-button"
+        (click)="deletePrediction(prediction.id)"
+      >
+        Delete
+      </button>
+    </div>
+  }
+
+</div>

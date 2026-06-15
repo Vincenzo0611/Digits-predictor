@@ -1,0 +1,146 @@
+<div class="predict-container">
+
+  <div class="card">
+
+    <h1 class="prediction-title">
+      Upload digit image
+    </h1>
+
+    <div class="upload-box">
+
+      <input
+        type="file"
+        (change)="onFileSelected($event)"
+      />
+
+      <button
+        (click)="uploadImage()"
+        [disabled]="isLoading"
+      >
+
+        @if(isLoading) {
+
+          Processing...
+
+        } @else {
+
+          Predict
+        }
+
+      </button>
+      @if(isLoading) {
+
+        <div class="loading-container">
+
+          <div class="spinner"></div>
+
+          <p>
+            Running prediction...
+          </p>
+
+        </div>
+      }
+      @if(feedbackMessage) {
+
+        <p class="success-message">
+
+          ✓ {{ feedbackMessage }}
+
+        </p>
+      }
+
+    </div>
+
+  </div>
+
+  @if(predictionResult) {
+
+    <div
+      class="card"
+      style="margin-top: 30px;"
+    >
+
+      <h2>
+        Prediction:
+        {{ predictionResult.prediction }}
+      </h2>
+
+      <p class="prediction-meta">
+
+        Confidence:
+        {{ predictionResult.confidence }}
+
+      </p>
+
+      <img
+        [src]="processedImageUrl"
+        class="prediction-image"
+      />
+
+      <div class="feedback-section">
+
+        <h3 class="feedback-title">
+          Was prediction correct?
+        </h3>
+
+        <div class="feedback-buttons">
+
+          <button
+            class="
+              feedback-button
+              correct-button
+            "
+            (click)="markCorrect()"
+          >
+            Correct
+          </button>
+
+          <button
+            class="
+              feedback-button
+              wrong-button
+            "
+            (click)="markWrong()"
+          >
+            Wrong
+          </button>
+
+        </div>
+
+        @if(feedbackChoice === 'wrong') {
+
+          <div class="digit-selector">
+
+            @for(
+              digit of
+              [0,1,2,3,4,5,6,7,8,9];
+              track digit
+            ) {
+
+              <button
+
+                class="digit-button"
+
+                [class.selected-digit]="
+                  selectedDigit === digit
+                "
+
+                (click)="selectDigit(digit)"
+              >
+                {{ digit }}
+              </button>
+            }
+
+          </div>
+
+          <button
+            (click)="submitWrongFeedback()"
+          >
+            Submit feedback
+          </button>
+        }
+
+      </div>
+    </div>
+  } 
+</div>
