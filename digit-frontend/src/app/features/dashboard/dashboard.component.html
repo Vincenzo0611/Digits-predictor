@@ -41,11 +41,7 @@
       }
 
       <img
-        [src]="
-          apiUrl +
-          '/processed/' +
-          prediction.processed_image_path
-        "
+        [src]="prediction.processed_image_url"
         class="prediction-image"
       />
       

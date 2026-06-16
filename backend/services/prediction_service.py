@@ -1,34 +1,53 @@
+import cv2
 import numpy as np
-import uuid
-import os
 
-from backend.core.config import PROCESSED_DIR
 from backend.ml.model_loader import model
 from backend.ml.preprocess import preprocess_image
 
 
-def predict_digit(image_path: str):
+def bytes_to_image(file_bytes):
 
-    processed_filename = f"{uuid.uuid4()}.png"
-
-    processed_path = os.path.join(
-        PROCESSED_DIR,
-        processed_filename
+    np_array = np.frombuffer(
+        file_bytes,
+        np.uint8
     )
 
-    processed_image = preprocess_image(
-        image_path,
-        save_processed_path=processed_path
+    img = cv2.imdecode(
+        np_array,
+        cv2.IMREAD_COLOR
+    )
+
+    return img
+
+
+def predict_digit(file_bytes):
+
+    img = bytes_to_image(file_bytes)
+
+    processed_image, visual_image = preprocess_image(
+        img,
+        return_visual=True
     )
 
     predictions = model.predict(processed_image)
 
-    predicted_digit = int(np.argmax(predictions))
+    predicted_digit = int(
+        np.argmax(predictions)
+    )
 
-    confidence = float(np.max(predictions))
+    confidence = float(
+        np.max(predictions)
+    )
+
+    _, buffer = cv2.imencode(
+        ".png",
+        visual_image
+    )
+
+    processed_bytes = buffer.tobytes()
 
     return {
         "digit": predicted_digit,
         "confidence": round(confidence, 4),
-        "processed_image": processed_filename
+        "processed_bytes": processed_bytes
     }

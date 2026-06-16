@@ -18,9 +18,9 @@ class Prediction(Base):
 
     id = Column(Integer, primary_key=True)
 
-    image_path = Column(String, nullable=False)
+    image_url = Column(String, nullable=False)
 
-    processed_image_path = Column(
+    processed_image_url = Column(
         String,
         nullable=False
     )

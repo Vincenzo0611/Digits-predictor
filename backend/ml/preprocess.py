@@ -3,15 +3,11 @@ import numpy as np
 
 TARGET_SIZE = (100, 100)
 
+
 def preprocess_image(
-    image_path: str,
-    save_processed_path: str = None
+    img,
+    return_visual=False
 ):
-
-    img = cv2.imread(image_path)
-
-    if img is None:
-        raise ValueError("Cannot read image")
 
     img = cv2.resize(
         img,
@@ -61,6 +57,7 @@ def preprocess_image(
         chosen_gray = bh_gray
 
     else:
+
         if (
             (s_top > s_black)
             and (s_top < s_black * 1.5)
@@ -76,6 +73,7 @@ def preprocess_image(
             chosen_gray = th_gray
 
         else:
+
             chosen_gray = cv2.addWeighted(
                 th_gray,
                 0.5,
@@ -106,13 +104,23 @@ def preprocess_image(
         cv2.THRESH_BINARY + cv2.THRESH_OTSU
     )
 
-    final_img = cv2.medianBlur(thresh, 3)
+    final_img = cv2.medianBlur(
+        thresh,
+        3
+    )
 
-    if save_processed_path:
-        cv2.imwrite(save_processed_path, final_img)
+    visual_image = final_img.copy()
 
     final_img = final_img.astype(np.float32) / 255.0
 
-    final_img = final_img.reshape(1, 100, 100, 1)
+    final_img = final_img.reshape(
+        1,
+        100,
+        100,
+        1
+    )
+
+    if return_visual:
+        return final_img, visual_image
 
     return final_img

@@ -1,9 +1,8 @@
 from fastapi import APIRouter
 from fastapi import Depends
+from fastapi import HTTPException
 
 from sqlalchemy.orm import Session
-
-from fastapi import HTTPException
 
 from backend.db.database import get_db
 
@@ -12,16 +11,14 @@ from backend.models.user import User
 
 from backend.api.dependencies import get_current_user
 
-from backend.core.config import UPLOAD_DIR, PROCESSED_DIR
+from backend.core.s3 import delete_image
 
-import os
-
-from backend.api.dependencies import require_admin
 
 router = APIRouter(
     prefix="/dashboard",
     tags=["Dashboard"]
 )
+
 
 @router.get("/")
 def get_dashboard(
@@ -42,33 +39,53 @@ def get_dashboard(
     return [
         {
             "id": prediction.id,
-            "prediction": prediction.predicted_digit,
-            "confidence": prediction.confidence,
-            "is_correct": prediction.is_correct,
-            "correct_digit": prediction.correct_digit,
-            "image_path": prediction.image_path,
-            "processed_image_path":
-                prediction.processed_image_path,
-            "user_id": prediction.user_id,
-            "user_email": prediction.user.email,
+
+            "prediction":
+                prediction.predicted_digit,
+
+            "confidence":
+                prediction.confidence,
+
+            "is_correct":
+                prediction.is_correct,
+
+            "correct_digit":
+                prediction.correct_digit,
+
+            "image_url":
+                prediction.image_url,
+
+            "processed_image_url":
+                prediction.processed_image_url,
+
+            "user_id":
+                prediction.user_id,
+
+            "user_email":
+                prediction.user.email,
         }
+
         for prediction in predictions
     ]
+
 
 @router.delete("/{prediction_id}")
 def delete_prediction(
     prediction_id: int,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user=Depends(get_current_user)
 ):
 
     prediction = (
         db.query(Prediction)
-        .filter(Prediction.id == prediction_id)
+        .filter(
+            Prediction.id == prediction_id
+        )
         .first()
     )
 
     if not prediction:
+
         raise HTTPException(
             status_code=404,
             detail="Prediction not found"
@@ -89,21 +106,25 @@ def delete_prediction(
             detail="Forbidden"
         )
 
-    image_path = os.path.join(
-        UPLOAD_DIR,
-        prediction.image_path
-    )
+    try:
 
-    processed_path = os.path.join(
-        PROCESSED_DIR,
-        prediction.processed_image_path
-    )
+        if prediction.image_url:
 
-    if os.path.exists(image_path):
-        os.remove(image_path)
+            delete_image(
+                prediction.image_url
+            )
 
-    if os.path.exists(processed_path):
-        os.remove(processed_path)
+        if prediction.processed_image_url:
+
+            delete_image(
+                prediction.processed_image_url
+            )
+
+    except Exception as e:
+
+        print(
+            f"S3 delete error: {e}"
+        )
 
     db.delete(prediction)
 

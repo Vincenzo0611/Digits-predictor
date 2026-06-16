@@ -63,8 +63,7 @@ export class PredictComponent {
         next: (response) => {
           this.predictionResult = response;
 
-          this.processedImageUrl =
-            `${this.apiUrl}/processed/${response.processed_image}`;
+          this.processedImageUrl = response.processed_image_url;
 
           this.isLoading = false;
         },

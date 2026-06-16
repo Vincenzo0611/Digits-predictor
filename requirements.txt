@@ -16,3 +16,5 @@ pillow
 numpy
 
 opencv-python-headless
+
+boto3

@@ -1,21 +1,19 @@
-import os
-import uuid
-
-from backend.core.config import UPLOAD_DIR
 from fastapi import APIRouter
 from fastapi import UploadFile
 from fastapi import File
 from fastapi import Depends
 
-from backend.services.prediction_service import predict_digit
+from sqlalchemy.orm import Session
 
 from backend.api.dependencies import get_current_user
-
-from sqlalchemy.orm import Session
 
 from backend.db.database import get_db
 
 from backend.models.prediction import Prediction
+
+from backend.services.prediction_service import predict_digit
+
+from backend.core.s3 import upload_image
 
 router = APIRouter(
     prefix="/predict",
@@ -23,31 +21,32 @@ router = APIRouter(
 )
 
 
-os.makedirs(UPLOAD_DIR, exist_ok=True)
-
-
 @router.post("/")
 async def predict(
     file: UploadFile = File(...),
-    current_user = Depends(get_current_user),
+    current_user=Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
 
-    filename = f"{uuid.uuid4()}.png"
+    file_bytes = await file.read()
 
-    file_path = os.path.join(   
-        UPLOAD_DIR,
-        filename
+    result = predict_digit(
+        file_bytes
     )
 
-    with open(file_path, "wb") as buffer:
-        buffer.write(await file.read())
+    image_url = upload_image(
+        file_bytes,
+        file.filename
+    )
 
-    result = predict_digit(file_path)
+    processed_url = upload_image(
+        result["processed_bytes"],
+        f"processed-{file.filename}"
+    )
 
     prediction_row = Prediction(
-        image_path=filename,
-        processed_image_path=result["processed_image"],
+        image_url=image_url,
+        processed_image_url=processed_url,
         predicted_digit=result["digit"],
         confidence=result["confidence"],
         user_id=current_user.id
@@ -61,8 +60,8 @@ async def predict(
 
     return {
         "prediction_id": prediction_row.id,
-        "filename": filename,
         "prediction": result["digit"],
         "confidence": result["confidence"],
-        "processed_image": result["processed_image"]
+        "image_url": image_url,
+        "processed_image_url": processed_url
     }

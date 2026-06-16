@@ -1,6 +1,3 @@
-import os
-
-from backend.core.config import PROCESSED_DIR, UPLOAD_DIR
 from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import HTTPException
@@ -15,6 +12,9 @@ from backend.models.prediction import Prediction
 
 from backend.api.dependencies import get_current_user
 
+from backend.core.s3 import delete_image
+
+
 router = APIRouter(
     prefix="/feedback",
     tags=["Feedback"]
@@ -22,8 +22,11 @@ router = APIRouter(
 
 
 class FeedbackRequest(BaseModel):
+
     prediction_id: int
+
     is_correct: bool
+
     correct_digit: int | None = None
 
 
@@ -43,34 +46,42 @@ def give_feedback(
     )
 
     if not prediction:
+
         raise HTTPException(
             status_code=404,
             detail="Prediction not found"
         )
 
-    prediction.is_correct = request.is_correct
+    prediction.is_correct = (
+        request.is_correct
+    )
 
     if request.is_correct:
 
-        image_path = os.path.join(
-            UPLOAD_DIR,
-            prediction.image_path
-        )
+        try:
 
-        processed_path = os.path.join(
-            PROCESSED_DIR,
-            prediction.processed_image_path
-        )
+            if prediction.image_url:
 
-        if os.path.exists(image_path):
-            os.remove(image_path)
+                delete_image(
+                    prediction.image_url
+                )
 
-        if os.path.exists(processed_path):
-            os.remove(processed_path)
-        
+            if prediction.processed_image_url:
+
+                delete_image(
+                    prediction.processed_image_url
+                )
+
+        except Exception as e:
+
+            print(
+                f"S3 delete error: {e}"
+            )
+
         db.delete(prediction)
 
     else:
+
         prediction.correct_digit = (
             request.correct_digit
         )
